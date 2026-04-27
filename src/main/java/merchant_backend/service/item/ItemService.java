@@ -1,6 +1,7 @@
 package merchant_backend.service.item;
 
 import lombok.RequiredArgsConstructor;
+import merchant_backend.dto.item.AllItemsResponseDTO;
 import merchant_backend.dto.item.NewItemRegistration;
 import merchant_backend.entities.Category;
 import merchant_backend.entities.Item;
@@ -8,6 +9,9 @@ import merchant_backend.entities.Users;
 import merchant_backend.repository.CategoryRepository;
 import merchant_backend.repository.ItemRepository;
 import merchant_backend.service.user.GetLoggedInUser;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,5 +40,21 @@ public class ItemService {
             }).toList();
     itemRepository.saveAll(itemsToSave);
     return "Items registered successfully";
+    }
+
+    public Page<AllItemsResponseDTO> getAllItems(int page, int size){
+        Users user= getLoggedInUser.getLoggedInUser();
+        Pageable pageable= PageRequest.of(page,size);
+        Page<Item> items= itemRepository.findAllByUser(user,pageable);
+
+        return items
+                .map(item -> new AllItemsResponseDTO(
+                        item.getId(),
+                        item.getCategory().getId(),
+                        item.getCategory().getName(),
+                        item.getName(),
+                        item.getUnitOfMeasurement(),
+                        item.getDescription()
+                        ));
     }
 }

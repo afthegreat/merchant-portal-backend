@@ -1,7 +1,18 @@
 package merchant_backend.repository;
 
 import merchant_backend.entities.Item;
+import merchant_backend.entities.Users;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
+
+    @Query("select i from Item i LEFT JOIN fetch i.category where i.user=:user")
+    Page<Item> findAllByUser(Users user, Pageable pageable);
+
+
 }
