@@ -20,6 +20,8 @@ public class Users implements UserDetails { // MUST be UserDetails
 
     private String password;
 
+    private boolean loggedInONCE=false;
+
     // --- Required UserDetails Methods ---
     @Override
     public String getUsername() { return this.userName; }

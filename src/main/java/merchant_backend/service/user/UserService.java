@@ -20,7 +20,7 @@ public class UserService {
 
     private final UsersRepository usersRepository;
     private final PasswordEncoder passwordEncoder;
-@Transactional
+    @Transactional
     public String registerNewUser(List<RegisterUser> requests){
     Set<String> incomingUserNames=new HashSet<>();
     List<String> userNames= requests.stream()
@@ -50,4 +50,13 @@ public class UserService {
                 .map(user -> new UserResponse(user.getId(), user.getUsername()))
                 .collect(Collectors.toList());
     }
-}
+    // Inside UsersService.java
+    @Transactional
+    public void updateLoggedInOnce(merchant_backend.entities.Users user) {
+        if (!user.isLoggedInONCE()) {
+            user.setLoggedInONCE(true);
+            usersRepository.save(user);
+        }
+    }
+
+    }

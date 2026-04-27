@@ -3,6 +3,7 @@ package merchant_backend.config.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import merchant_backend.entities.Users;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -26,19 +27,20 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(String username) {
-        return generateToken(username, jwtExpirationMs);
+    public String generateAccessToken(String username, Long userId, boolean loggedInOnce) {
+        return generateToken(username, userId,loggedInOnce, jwtExpirationMs);
     }
 
-    private String generateToken(String username, int expiration) {
+    private String generateToken(String username, Long userId, boolean loggedInOnce,int expiration) {
         return Jwts.builder()
                 .subject(username)
+                .claim("id", userId)
+                .claim("loggedInOnce", loggedInOnce)
                 .issuedAt(new Date())
-                .expiration(new Date((new Date()).getTime() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
     }
-
     public String getUserNameFromJwtToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
