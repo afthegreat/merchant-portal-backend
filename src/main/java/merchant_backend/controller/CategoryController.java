@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import merchant_backend.dto.category.AllCategoriesResponse;
 import merchant_backend.dto.category.RegisterCategory;
 import merchant_backend.service.category.CategoryService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +24,10 @@ public class CategoryController {
     }
 
     @GetMapping("/getallcategories")
-    public ResponseEntity<List<AllCategoriesResponse>> getAllCategories(){
-    List<AllCategoriesResponse> response= categoryService.getAllCategories();
-    return ResponseEntity.ok(response);
+    public ResponseEntity<Page<AllCategoriesResponse>> getAllCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+    return ResponseEntity.ok(categoryService.getAllCategories(page,size));
     }
 }

@@ -8,6 +8,9 @@ import merchant_backend.entities.BusinessType;
 import merchant_backend.entities.Category;
 import merchant_backend.repository.BusinessTypeRepository;
 import merchant_backend.repository.CategoryRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,12 +44,17 @@ public class CategoryService {
     }
 
     @Transactional
-    public List<AllCategoriesResponse> getAllCategories(){
-       return categoryRepository.findAllWithBusinessTypes().stream()
-               .map(category -> new AllCategoriesResponse(
-                       category.getId(),
-                       category.getName(),
-                       category.getBusinessType().getName()
-               )).toList();
-    }
-}
+    public Page<AllCategoriesResponse> getAllCategories(int page, int size) {
+        // 1. Create a request for a specific page and size
+        Pageable pageable = PageRequest.of(page, size);
+
+        // 2. Fetch the page of entities
+        Page<Category> categoryPage = categoryRepository.findAllWithBusinessTypes(pageable);
+
+        // 3. Map the page of entities to a page of DTOs
+        return categoryPage.map(category -> new AllCategoriesResponse(
+                category.getId(),
+                category.getName(),
+                category.getBusinessType().getName()
+        ));
+    }}
