@@ -52,9 +52,9 @@ public ResponseEntity<?> refreshToken(@CookieValue(name = "refresh_token") Strin
             .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
 }
 
-	@PostMapping("/logout/{userId}")
-	public ResponseEntity<String> logoutUser(@PathVariable Long userId){
-		String response= logoutService.logoutUser(userId);
-		return ResponseEntity.ok(response);
+	@PostMapping("/logout")
+	public ResponseEntity<String> logoutUser(HttpServletResponse response){
+		logoutService.logoutUser(response);
+		return ResponseEntity.ok("Logged out successfully");
 	}
 }
