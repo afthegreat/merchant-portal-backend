@@ -14,7 +14,8 @@ import lombok.Setter;
 @Table(name = "attribute_values")
 public class AttributeValue {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "attval_seq")
+    @SequenceGenerator(name = "attval_seq", sequenceName = "attribute_value_sequence", allocationSize = 50)
     private Long id;
 
     @ManyToOne

@@ -14,5 +14,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     @Query("select i from Item i LEFT JOIN fetch i.category where i.user=:user")
     Page<Item> findAllByUser(Users user, Pageable pageable);
 
+    List<Item> findAllByIdInAndUser(List<Long> ids, Users user);
+
 
 }
