@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,17 +28,27 @@ public class ItemService {
     public String registerNewItems(List<NewItemRegistration> request){
         Users user= getLoggedInUser.getLoggedInUser();
 
-        List<Item> itemsToSave = request.stream()
+        List<Long> allCategoryIds= request.stream().map(
+                    NewItemRegistration::getCategory
+        ).distinct().toList();
+
+        Map<Long, Category> categoryMap= categoryRepository.findAllById(allCategoryIds).stream()
+                .collect(Collectors.toMap(Category::getId, c->c));
+    List<Item> itemsToSave= request.stream()
             .map(req->{
-                Category cat= categoryRepository.findById(req.getCategory()).orElseThrow();
-                Item item=new Item();
-                item.setUser(user);
-                item.setCategory(cat);
-                item.setName(req.getItemName());
-                item.setDescription(req.getDescription());
-                item.setUnitOfMeasurement(req.getUnitOfMeasurement());
+                Category category= categoryMap.get(req.getCategory());
+                if (category==null){
+                    throw new RuntimeException("Invalid category ID: "+req.getCategory());
+                }
+                    Item item= new Item();
+                    item.setUser(user);
+                    item.setCategory(category);
+                    item.setName(req.getItemName());
+                    item.setDescription(req.getDescription());
+                    item.setUnitOfMeasurement(req.getUnitOfMeasurement());
 
                 return item;
+
             }).toList();
     itemRepository.saveAll(itemsToSave);
     return "Items registered successfully";
