@@ -14,6 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,21 +26,35 @@ public class CategoryService {
 
     @Transactional
     public String registerNewCategory(List<RegisterCategory> requests){
-        List<Category> categoriesToSave= requests.stream()
-                .map(req->{
-                    Category category= new Category();
-                    category.setName(req.getCategoryName());
-                    BusinessType businessType= businessTypeRepository.findById(req.getBusinessTypeId())
-                                    .orElseThrow(()->new RuntimeException("business type id is invalid"));
-                    category.setBusinessType(businessType);
-                    if(req.getParentId()!=null){
-                        Category parentId= categoryRepository.findById(req.getParentId())
-                                .orElseThrow(()-> new RuntimeException("Incorrect parent category"));
-                        category.setParent(parentId);
-                    }
+        List<Long> allBusinessTypeIds= requests.stream().map(
+                RegisterCategory::getBusinessTypeId
+        ).distinct().toList();
 
-                   return category;
-                }).toList();
+        Map<Long, BusinessType> businessTypeMap= businessTypeRepository.findAllById(allBusinessTypeIds).stream()
+                .collect(Collectors.toMap(BusinessType::getId, b->b));
+
+        List<Long> allParentIds= requests.stream().map(RegisterCategory::getParentId).distinct().toList();
+
+        Map<Long, Category> categoryMap= categoryRepository.findAllById(allParentIds).stream().collect(Collectors.toMap(Category::getId, p->p));
+
+        List<Category> categoriesToSave=requests.stream().map(req->{
+            BusinessType type= businessTypeMap.get(req.getBusinessTypeId());
+            if (type==null){
+                throw new RuntimeException("Invalid business type ID:"+req.getBusinessTypeId());
+            }
+
+            Category category= new Category();
+            category.setBusinessType(type);
+            if (req.getParentId()!=null){
+                Category parentId=categoryMap.get(req.getParentId());
+                if (parentId==null){
+                    throw new RuntimeException("invalid parent id:"+req.getParentId());
+                }
+                category.setParent(parentId);
+            }
+            category.setName(req.getCategoryName());
+            return category;
+        }).toList();
         categoryRepository.saveAll(categoriesToSave);
         return "Categories Registered";
     }
