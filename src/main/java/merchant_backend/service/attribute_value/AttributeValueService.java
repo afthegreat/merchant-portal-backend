@@ -2,12 +2,16 @@ package merchant_backend.service.attribute_value;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import merchant_backend.dto.attribute_value.AllIAttributeValuesResponseDTO;
 import merchant_backend.dto.attribute_value.NewAttributeValue;
 import merchant_backend.entities.Attribute;
 import merchant_backend.entities.AttributeValue;
 import merchant_backend.repository.AttributeRepository;
 import merchant_backend.repository.AttributeValueRepository;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,5 +46,18 @@ public class AttributeValueService {
         ).toList();
         attributeValueRepository.saveAll(attributeValuesToSave);
         return "attribute values created successfully";
+    }
+
+    public Page<AllIAttributeValuesResponseDTO> getAllAttributeValues(int page, int size){
+        Pageable pageable= PageRequest.of(page, size);
+
+Page<AttributeValue> attributeValues= attributeValueRepository.findAll(pageable);
+return
+        attributeValues.map(attributeValue -> new AllIAttributeValuesResponseDTO(
+                attributeValue.getId(),
+                attributeValue.getAttribute().getId(),
+                attributeValue.getAttribute().getName(),
+                attributeValue.getValue()
+        ));
     }
 }

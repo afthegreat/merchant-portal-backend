@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,6 +24,8 @@ public class ItemVariant {
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
+    @OneToMany(mappedBy = "itemVariant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VariantAttributeMap> attributeMappings = new ArrayList<>();
 
     private Double unitPrice;
 }
