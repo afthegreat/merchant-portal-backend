@@ -38,11 +38,28 @@ public class BusinessTypeService {
                 .toList();
     }
 
-    public BulkBusinessTypeDto getCurrentBusinessTypeNames(){
-        List<Long>businessTypeIds=merchantProfileService.getSingleMerchantProfile().businessTypeId();
+//    public BulkBusinessTypeDto getCurrentBusinessTypeNames(){
+//        List<Long>businessTypeIds=merchantProfileService.getSingleMerchantProfile().businessTypeId();
+//
+//        List<String> allBusinessTypeNames= businessTypeRepository.findAllById(businessTypeIds).stream()
+//                .map(BusinessType::getName).toList();
+//        return new BulkBusinessTypeDto(allBusinessTypeNames);
+//    }
 
-        List<String> allBusinessTypeNames= businessTypeRepository.findAllById(businessTypeIds).stream()
-                .map(BusinessType::getName).toList();
-        return new BulkBusinessTypeDto(allBusinessTypeNames);
+    public BulkBusinessTypeDto getCurrentBusinessTypeNames(){
+
+        List<Long> businessTypeIds =
+                merchantProfileService.getSingleMerchantProfile().businessTypeId();
+
+        List<BusinessTypeResponse> businessTypes =
+                businessTypeRepository.findAllById(businessTypeIds)
+                        .stream()
+                        .map(bt -> new BusinessTypeResponse(
+                                bt.getId(),
+                                bt.getName()
+                        ))
+                        .toList();
+
+        return new BulkBusinessTypeDto(businessTypes);
     }
 }

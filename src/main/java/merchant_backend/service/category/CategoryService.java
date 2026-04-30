@@ -3,11 +3,13 @@ package merchant_backend.service.category;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import merchant_backend.dto.category.AllCategoriesResponse;
+import merchant_backend.dto.category.LoggedInUserCategoryResponseDto;
 import merchant_backend.dto.category.RegisterCategory;
 import merchant_backend.entities.BusinessType;
 import merchant_backend.entities.Category;
 import merchant_backend.repository.BusinessTypeRepository;
 import merchant_backend.repository.CategoryRepository;
+import merchant_backend.service.MerchantProfileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final BusinessTypeRepository businessTypeRepository;
+    private final MerchantProfileService merchantProfileService;
 
     @Transactional
     public String registerNewCategory(List<RegisterCategory> requests){
@@ -73,4 +76,33 @@ public class CategoryService {
                 category.getName(),
                 category.getBusinessType().getName()
         ));
-    }}
+    }
+
+    @Transactional
+    public List<LoggedInUserCategoryResponseDto> getLoggedInUserCategories(){
+        List<Long> businessTypeIds= merchantProfileService.getSingleMerchantProfile().businessTypeId();
+        List<Category> categories= categoryRepository.findByBusinessType_IdIn(businessTypeIds);
+          return categories
+                .stream()
+                .map(category-> new LoggedInUserCategoryResponseDto(
+                        category.getId(),
+                        category.getParent()!=null ? category.getParent().getId(): null,
+                        category.getParent()!=null ? category.getParent().getName(): null,
+                        category.getName()
+                )).toList();
+    }
+
+    @Transactional
+    public List<LoggedInUserCategoryResponseDto>getCategoryByBusinessTypeId(Long id){
+        List<Category> categories= categoryRepository.findByBusinessType_Id(id);
+        return categories.stream()
+                .map(category -> new LoggedInUserCategoryResponseDto(
+                        category.getId(),
+                        category.getParent()!=null ? category.getParent().getId(): null,
+                        category.getParent()!=null ? category.getParent().getName(): null,
+                        category.getName()
+                )).toList();
+    }
+}
+
+

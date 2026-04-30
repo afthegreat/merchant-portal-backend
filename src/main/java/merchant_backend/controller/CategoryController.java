@@ -2,6 +2,7 @@ package merchant_backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import merchant_backend.dto.category.AllCategoriesResponse;
+import merchant_backend.dto.category.LoggedInUserCategoryResponseDto;
 import merchant_backend.dto.category.RegisterCategory;
 import merchant_backend.service.category.CategoryService;
 import org.springframework.data.domain.Page;
@@ -29,5 +30,15 @@ public class CategoryController {
             @RequestParam(defaultValue = "10") int size
     ){
     return ResponseEntity.ok(categoryService.getAllCategories(page,size));
+    }
+
+    @GetMapping("/getloggedinusercategory")
+    public ResponseEntity<List<LoggedInUserCategoryResponseDto>> getLoggedInCategories(){
+        return ResponseEntity.ok(categoryService.getLoggedInUserCategories());
+    }
+
+    @GetMapping("getcategorybybusinesstypeid")
+    public ResponseEntity<List<LoggedInUserCategoryResponseDto>> getCategoryByBusinessId(@RequestParam Long userId){
+        return ResponseEntity.ok(categoryService.getCategoryByBusinessTypeId(userId));
     }
 }
