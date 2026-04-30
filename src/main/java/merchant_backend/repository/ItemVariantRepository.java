@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ItemVariantRepository extends JpaRepository<ItemVariant, Long> {
@@ -17,5 +18,7 @@ public interface ItemVariantRepository extends JpaRepository<ItemVariant, Long> 
 
     @EntityGraph(attributePaths = "item")
     Page<ItemVariant> findAllByItem_User(Users user, Pageable pageable);
+
+    List<ItemVariant> findAllByIdInAndItem_User_Id(List<Long> ids, Long user );
 
 }

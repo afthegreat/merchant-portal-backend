@@ -41,4 +41,6 @@ public class MerchantProfileService {
         merchantProfileRepository.saveAll(profileToSave);
         return "Profiles created successfully";
     }
+
+    p
 }

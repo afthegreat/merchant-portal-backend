@@ -5,6 +5,7 @@ import merchant_backend.dto.variant_attribute_map.NewVariantAttributeDTO;
 import merchant_backend.service.variant_attribute_map.VariantAttributeMapService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +18,7 @@ public class VariantAttributeMapController {
     private final VariantAttributeMapService variantAttributeMapService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerNewMapping(List<NewVariantAttributeDTO> requests){
+    public ResponseEntity<String> registerNewMapping(@RequestBody List<NewVariantAttributeDTO> requests){
         return  ResponseEntity.ok(variantAttributeMapService.registerNewMapping(requests));
     }
 }

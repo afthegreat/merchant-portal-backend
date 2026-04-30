@@ -1,13 +1,16 @@
 package merchant_backend.service.variant_attribute_map;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import merchant_backend.dto.variant_attribute_map.NewVariantAttributeDTO;
 import merchant_backend.entities.AttributeValue;
 import merchant_backend.entities.ItemVariant;
+import merchant_backend.entities.Users;
 import merchant_backend.entities.VariantAttributeMap;
 import merchant_backend.repository.AttributeValueRepository;
 import merchant_backend.repository.ItemVariantRepository;
 import merchant_backend.repository.VarinatAttributeMapRepository;
+import merchant_backend.service.user.GetLoggedInUser;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,12 +24,16 @@ public class VariantAttributeMapService {
     private final VarinatAttributeMapRepository varinatAttributeMapRepository;
     private final ItemVariantRepository itemVariantRepository;
     private final AttributeValueRepository attributeValueRepository;
+    private final GetLoggedInUser getLoggedInUser;
 
+    @Transactional
     public String registerNewMapping(List<NewVariantAttributeDTO> requests){
+        Users loggedInUser= getLoggedInUser.getLoggedInUser();
+
         List<Long> allVariantIds= requests.stream().map(NewVariantAttributeDTO::variantId).distinct().toList();
         List<Long> allValueIds= requests.stream().map(NewVariantAttributeDTO::attributeValueId).distinct().toList();
 
-        Map<Long, ItemVariant> variantMap= itemVariantRepository.findAllById(allVariantIds).stream()
+        Map<Long, ItemVariant> variantMap= itemVariantRepository.findAllByIdInAndItem_User_Id(allVariantIds, loggedInUser.getId()).stream()
                 .collect(Collectors.toMap(ItemVariant::getId, iv->iv));
         Map<Long, AttributeValue> valueMap= attributeValueRepository.findAllById(allValueIds)
                 .stream().collect(Collectors.toMap(AttributeValue::getId, av->av));
@@ -35,7 +42,7 @@ public class VariantAttributeMapService {
             VariantAttributeMap variantAttributeMap= new VariantAttributeMap();
             ItemVariant variant= variantMap.get(request.variantId());
             if(variant==null){
-                throw new RuntimeException("invalid id for item variant id:"+ request.variantId());
+                throw new RuntimeException("Some variants are invalid or do not belong to the current user"+ request.variantId());
             }
             AttributeValue value= valueMap.get(request.attributeValueId());
             if (value==null){
@@ -43,8 +50,7 @@ public class VariantAttributeMapService {
             }
             Long newAttributeCategoryId = value.getAttribute().getId();
 
-            // 2. Check if the variant already has a mapping for this category
-            // Note: This assumes your ItemVariant entity has a List<VariantAttributeMap> called 'attributeMappings'
+            //Check if the variant already has a mapping for this category
             boolean alreadyHasThisAttribute = variant.getAttributeMappings().stream()
                     .anyMatch(existingMapping ->
                             existingMapping.getAttributeValue().getAttribute().getId().equals(newAttributeCategoryId)
@@ -62,4 +68,6 @@ public class VariantAttributeMapService {
         varinatAttributeMapRepository.saveAll(variantAttributeMapsToSave);
         return "variant attribute value maps created successfully";
     }
+
+
 }
