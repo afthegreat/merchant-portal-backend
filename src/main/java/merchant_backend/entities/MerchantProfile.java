@@ -18,7 +18,6 @@ public class MerchantProfile {
     private Long id;
 
     @ManyToOne
-    // name = the DB column name; we'll use merchant_id to be standard
     @JoinColumn(name = "merchant_id", nullable = false)
     private Users merchant; // <--- CHANGE THIS from merchantId to merchant
 

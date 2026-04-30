@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface BusinessTypeRepository extends JpaRepository<BusinessType, Long> {
     boolean existsBusinessTypeByNameIn(List<String> businessNames);
+
+
 }

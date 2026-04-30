@@ -2,6 +2,7 @@ package merchant_backend.service;
 
 
 import lombok.RequiredArgsConstructor;
+import merchant_backend.dto.BusinessType.BulkBusinessTypeDto;
 import merchant_backend.dto.BusinessType.BusinessTypeResponse;
 import merchant_backend.dto.BusinessType.RegisterBusinessType;
 import merchant_backend.entities.BusinessType;
@@ -15,6 +16,7 @@ import java.util.List;
 public class BusinessTypeService {
 
     private final BusinessTypeRepository businessTypeRepository;
+    private final MerchantProfileService merchantProfileService;
 
     public String registerNewBusinessType(List<RegisterBusinessType> requests){
         List<BusinessType> businessTypesToSave= requests.stream()
@@ -34,5 +36,13 @@ public class BusinessTypeService {
         return types.stream()
                 .map( type-> new BusinessTypeResponse(type.getId(),type.getName()))
                 .toList();
+    }
+
+    public BulkBusinessTypeDto getCurrentBusinessTypeNames(){
+        List<Long>businessTypeIds=merchantProfileService.getSingleMerchantProfile().businessTypeId();
+
+        List<String> allBusinessTypeNames= businessTypeRepository.findAllById(businessTypeIds).stream()
+                .map(BusinessType::getName).toList();
+        return new BulkBusinessTypeDto(allBusinessTypeNames);
     }
 }

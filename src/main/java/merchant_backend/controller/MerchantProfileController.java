@@ -1,18 +1,16 @@
 package merchant_backend.controller;
 
 import lombok.RequiredArgsConstructor;
+import merchant_backend.dto.MerchantProfile.MerchantProfileResponseDTO;
 import merchant_backend.dto.MerchantProfile.RegisterNewMerchantProfile;
 import merchant_backend.service.MerchantProfileService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/merchant")
+@RequestMapping("/merchantprofile")
 @RequiredArgsConstructor
 public class MerchantProfileController {
 
@@ -20,7 +18,11 @@ public class MerchantProfileController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody List<RegisterNewMerchantProfile> request) {
-     String response = merchantProfileService.createNewProfile(request);
-     return ResponseEntity.ok(response);
+     return ResponseEntity.ok(merchantProfileService.createNewProfile(request));
+    }
+
+    @GetMapping("/getcurrentuserprofile")
+    public ResponseEntity<MerchantProfileResponseDTO> getCurrentUserProfile(){
+        return ResponseEntity.ok(merchantProfileService.getSingleMerchantProfile());
     }
 }
