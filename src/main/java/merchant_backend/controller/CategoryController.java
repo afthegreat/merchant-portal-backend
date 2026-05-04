@@ -38,7 +38,7 @@ public class CategoryController {
     }
 
     @GetMapping("getcategorybybusinesstypeid")
-    public ResponseEntity<List<LoggedInUserCategoryResponseDto>> getCategoryByBusinessId(@RequestParam Long userId){
-        return ResponseEntity.ok(categoryService.getCategoryByBusinessTypeId(userId));
+    public ResponseEntity<List<LoggedInUserCategoryResponseDto>> getCategoryByBusinessId(@RequestParam Long businessTypeId){
+        return ResponseEntity.ok(categoryService.getCategoryByBusinessTypeId(businessTypeId));
     }
 }

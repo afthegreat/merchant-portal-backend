@@ -43,8 +43,8 @@ public JwtResponse loginUser(LoginRequest request, HttpServletResponse response)
     cookie.setMaxAge(24 * 60 * 60); // 1 day
     response.addCookie(cookie);
     // ----------------------------------------------------
-
+ String tokenString= refreshToken.getToken();
     // Return only the Access Token and Username in the JSON body
-    return new JwtResponse(jwt, null, request.username());
+    return new JwtResponse(jwt, tokenString, request.username());
 }
 }

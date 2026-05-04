@@ -2,6 +2,8 @@ package merchant_backend.config;
 
 import lombok.RequiredArgsConstructor;
 import merchant_backend.config.security.jwt.AuthTokenFilter;
+import merchant_backend.exception.CustomAccessDeniedHandler;
+import merchant_backend.exception.CustomAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.CorsFilter; // Use this one!import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +32,8 @@ public class WebSecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final AuthTokenFilter authTokenFilter;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -77,6 +81,9 @@ public class WebSecurityConfig {
                 }))
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception->exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers(
                                         "/api/auth/**",           // Auth endpoints
