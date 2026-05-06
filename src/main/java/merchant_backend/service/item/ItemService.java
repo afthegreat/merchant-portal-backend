@@ -75,22 +75,23 @@ public class ItemService {
                 ));
     }
 
-    public Page<AllItemsResponseDTO> getItemByCategoryId(int page, int size,Long categoryId) {
-        Pageable pageable=PageRequest.of(page, size);
-    Page<Item> items= itemRepository.findAllByCategoryId(pageable,categoryId);
-    return items
-            .map(item -> new AllItemsResponseDTO(
-                    item.getId(),
-                    item.getCategory().getId(),
-                    item.getCategory().getName(),
-                    item.getName(),
-                    item.getUnitOfMeasurement(),
-                    item.getDescription()
-            ));
+    public Page<AllItemsResponseDTO> getItemByCategoryId(int page, int size, Long categoryId) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Item> items = itemRepository.findAllByCategoryId(pageable, categoryId);
+        return items
+                .map(item -> new AllItemsResponseDTO(
+                        item.getId(),
+                        item.getCategory().getId(),
+                        item.getCategory().getName(),
+                        item.getName(),
+                        item.getUnitOfMeasurement(),
+                        item.getDescription()
+                ));
     }
-    public Page<ItemDTO> getItemDetailsByCategory(Long categoryId, int page, int size ) {
-        Pageable pageable= PageRequest.of(page,size);
-        Page<Item> itemPage = itemRepository.findAllByCategoryyId(categoryId, pageable);
+
+    public Page<ItemDTO> getItemDetailsByCategory(Long categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Item> itemPage = itemRepository.findAllByCategoryId(categoryId, pageable);
 
         return itemPage.map(item -> new ItemDTO(
                 item.getId(),
@@ -99,6 +100,26 @@ public class ItemService {
                 item.getDescription(),
                 item.getItemVariants().stream().map(variant -> new VariantDto(
                         variant.getId(),
+                        variant.getUnitPrice(),
+                        variant.getAttributeMappings().stream().collect(Collectors.toMap(
+                                map -> map.getAttributeValue().getAttribute().getName(),
+                                map -> map.getAttributeValue().getValue()
+                        ))
+                )).toList()
+        ));
+    }
+
+    public Page<ItemDTO> getItemDetailsByItem(Long itemId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Item> itemPage = itemRepository.findAllById(itemId, pageable);
+        return itemPage.map(item -> new ItemDTO(
+                item.getId(),
+                item.getName(),
+                item.getUnitOfMeasurement(),
+                item.getDescription(),
+                item.getItemVariants().stream().map(variant -> new VariantDto(
+                        variant.getId(),
+                        variant.getUnitPrice(),
                         variant.getAttributeMappings().stream().collect(Collectors.toMap(
                                 map -> map.getAttributeValue().getAttribute().getName(),
                                 map -> map.getAttributeValue().getValue()

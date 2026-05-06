@@ -18,10 +18,18 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findAllByIdInAndUser(List<Long> ids, Users user);
 
     Page<Item> findAllByCategoryId(Pageable pageable,Long categoryId);
-    @Query("SELECT i FROM Item i JOIN FETCH i.itemVariants v " +
-            "JOIN FETCH v.attributeMappings m " +
-            "JOIN FETCH m.attributeValue av " +
-            "JOIN FETCH av.attribute " +
-            "WHERE i.category.id = :categoryId")
-    Page<Item> findAllByCategoryyId(Long categoryId, Pageable pageable);
+    @EntityGraph(attributePaths = {
+            "itemVariants",
+            "itemVariants.attributeMappings",
+            "itemVariants.attributeMappings.attributeValue",
+            "itemVariants.attributeMappings.attributeValue.attribute"
+    })
+    Page<Item> findAllByCategoryId(Long id, Pageable pageable);
+    @EntityGraph(attributePaths = {
+            "itemVariants",
+            "itemVariants.attributeMappings",
+            "itemVariants.attributeMappings.attributeValue",
+            "itemVariants.attributeMappings.attributeValue.attribute"
+    })
+    Page<Item> findAllById(Long id, Pageable pageable);
 }

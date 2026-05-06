@@ -6,7 +6,6 @@ import merchant_backend.dto.item.ItemDTO;
 import merchant_backend.dto.item.NewItemRegistration;
 import merchant_backend.service.item.ItemService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,5 +41,14 @@ public class ItemController {
             @RequestParam (defaultValue = "10") int size,
             @RequestParam Long categoryId){
         return ResponseEntity.ok(itemService.getItemDetailsByCategory(categoryId, page, size));
+    }
+
+    @GetMapping("getitemdetailsbyitem")
+    public ResponseEntity<Page<ItemDTO>> getItemDetailsByItem(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam (defaultValue = "10") int size,
+            @RequestParam Long itemId
+    ){
+        return ResponseEntity.ok(itemService.getItemDetailsByItem(itemId,page,size));
     }
 }
