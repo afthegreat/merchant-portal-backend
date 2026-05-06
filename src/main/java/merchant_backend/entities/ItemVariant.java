@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -25,7 +27,7 @@ public class ItemVariant {
     @JoinColumn(name = "item_id")
     private Item item;
     @OneToMany(mappedBy = "itemVariant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<VariantAttributeMap> attributeMappings = new ArrayList<>();
+    private Set<VariantAttributeMap> attributeMappings = new LinkedHashSet<>();
 
     private Double unitPrice;
 }

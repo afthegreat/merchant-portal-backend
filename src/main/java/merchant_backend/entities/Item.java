@@ -6,6 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +35,9 @@ public class Item {
     private String unitOfMeasurement;
     private String description;
     private String imageUrl;
+    // Inside Item.java
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
+    private Set<ItemVariant> itemVariants= new LinkedHashSet<>();
 }
 
 

@@ -62,4 +62,14 @@ public class ItemVariantService {
             itemVariant.getUnitPrice()
     ) );
     }
+
+    public Page<AllVariantsResponse> getVariantById(int page, int size,Long itemId){
+        Pageable pageable=PageRequest.of(page,size);
+        Page<ItemVariant> variants= itemVariantRepository.findAllByItemId(pageable,itemId);
+        return variants.map(itemVariant -> new AllVariantsResponse(
+                itemVariant.getItem().getId(),
+                itemVariant.getItem().getName(),
+                itemVariant.getUnitPrice()
+        ));
+    }
 }

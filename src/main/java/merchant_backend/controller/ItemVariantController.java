@@ -30,4 +30,12 @@ public class ItemVariantController {
         return ResponseEntity.ok(itemVariantService.getAllVariants(page, size));
     }
 
+    @GetMapping("/getvarintbyitemid")
+    public ResponseEntity<Page<AllVariantsResponse>> getVariantByItem(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam Long item_id){
+        return ResponseEntity.ok(itemVariantService.getVariantById(page, size, item_id));
+    }
+
 }

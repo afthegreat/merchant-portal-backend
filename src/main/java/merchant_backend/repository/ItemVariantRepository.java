@@ -21,4 +21,5 @@ public interface ItemVariantRepository extends JpaRepository<ItemVariant, Long> 
 
     List<ItemVariant> findAllByIdInAndItem_User_Id(List<Long> ids, Long user );
 
+    Page<ItemVariant> findAllByItemId(Pageable pageable, Long itemId);
 }
